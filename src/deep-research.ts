@@ -6,6 +6,7 @@ import { z } from 'zod';
 
 import { getModel, trimPrompt } from './ai/providers';
 import { systemPrompt } from './prompt';
+import { searchWithSerper } from './serper-search';
 
 function log(...args: any[]) {
   console.log(...args);
@@ -219,11 +220,14 @@ export async function deepResearch({
     serpQueries.map(serpQuery =>
       limit(async () => {
         try {
-          const result = await firecrawl.search(serpQuery.query, {
-            timeout: 15000,
-            limit: 5,
-            scrapeOptions: { formats: ['markdown'] },
-          });
+          const result =
+            process.env.SEARCH_PROVIDER === 'serper'
+              ? await searchWithSerper(firecrawl, serpQuery.query)
+              : await firecrawl.search(serpQuery.query, {
+                  timeout: 15000,
+                  limit: 5,
+                  scrapeOptions: { formats: ['markdown'] },
+                });
 
           // Collect URLs from this search
           const newUrls = compact(result.data.map(item => item.url));
