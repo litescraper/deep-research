@@ -5,6 +5,7 @@ import pLimit from 'p-limit';
 import { z } from 'zod';
 
 import { getModel, trimPrompt } from './ai/providers';
+import { searchWithLitescrape } from './litescrape-search';
 import { systemPrompt } from './prompt';
 
 function log(...args: any[]) {
@@ -219,11 +220,14 @@ export async function deepResearch({
     serpQueries.map(serpQuery =>
       limit(async () => {
         try {
-          const result = await firecrawl.search(serpQuery.query, {
-            timeout: 15000,
-            limit: 5,
-            scrapeOptions: { formats: ['markdown'] },
-          });
+          const result =
+            process.env.SEARCH_PROVIDER === 'litescrape'
+              ? await searchWithLitescrape(firecrawl, serpQuery.query)
+              : await firecrawl.search(serpQuery.query, {
+                  timeout: 15000,
+                  limit: 5,
+                  scrapeOptions: { formats: ['markdown'] },
+                });
 
           // Collect URLs from this search
           const newUrls = compact(result.data.map(item => item.url));

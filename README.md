@@ -206,3 +206,15 @@ CUSTOM_MODEL="custom_model"
 ## License
 
 MIT License - feel free to use and modify as needed.
+## Optional native Google search
+
+Unset or empty base URL overrides keep the provider default. Custom path
+prefixes and trailing slashes are supported.
+
+Set `SEARCH_PROVIDER=litescrape` and `LITESCRAPE_API_KEY` to select the new
+search adapter. Optionally set `LITESCRAPE_BASE_URL` (default
+`https://api.litescrape.com`) without a route suffix.
+The existing `FIRECRAWL_KEY` or self-hosted Firecrawl remains necessary:
+the adapter discovers URLs, then uses Firecrawl to retrieve full-page Markdown
+for the research pipeline. Search snippets do not replace page content.
+Without this setting, Firecrawl search remains unchanged.
